@@ -1,0 +1,2132 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Atomic English — Theo Dõi Tiến Bộ Tiếng Anh &amp; Năng Lượng</title>
+  <meta name="theme-color" content="#10b981" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Atomic English" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              300: '#6ee7b7',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.35);
+      border-radius: 9999px;
+    }
+    .heatmap-cell {
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+    .heatmap-cell:hover {
+      transform: scale(1.22);
+      z-index: 10;
+    }
+    .heatmap-cell.selected-cell {
+      outline: 2px solid #0ea5e9;
+      outline-offset: 1px;
+    }
+    .pb-safe {
+      padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+    }
+    @media (min-width: 768px) {
+      .pb-safe {
+        padding-bottom: 2.5rem;
+      }
+    }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-up {
+      animation: fadeSlideUp 0.22s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-200 selection:bg-emerald-200 dark:selection:bg-emerald-800">
+
+  <!-- Top Header -->
+  <header class="sticky top-0 z-30 bg-white/85 dark:bg-slate-900/85 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800">
+    <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
+      <!-- Brand -->
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-sm shrink-0">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <div class="truncate">
+          <h1 class="text-sm sm:text-base font-bold tracking-tight leading-tight truncate">Atomic English</h1>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-none hidden sm:block">6 buổi/tuần · 60p/ngày · Cân bằng kỹ năng</p>
+        </div>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl" aria-label="Điều hướng chính">
+        <button data-tab="today" class="nav-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all">Hôm nay</button>
+        <button data-tab="heatmap" class="nav-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all">Bảng nhiệt</button>
+        <button data-tab="stats" class="nav-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all">Thống kê</button>
+        <button data-tab="habits" class="nav-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all">Thói quen</button>
+      </nav>
+
+      <!-- Right Controls -->
+      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <!-- Streak Pill -->
+        <div id="header-streak-pill" class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-200/80 dark:border-amber-800/60 text-amber-700 dark:text-amber-300 text-xs font-bold" title="Chuỗi ngày duy trì (bảo toàn 1 ngày nghỉ/tuần)">
+          <span>🔥</span>
+          <span id="header-streak-count">0</span>
+          <span class="hidden sm:inline font-medium">ngày</span>
+        </div>
+
+        <!-- Backup / Sync Button -->
+        <button id="btn-open-sync" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Sao lưu &amp; Đồng bộ dữ liệu (JSON)" aria-label="Sao lưu và đồng bộ">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+          </svg>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button id="btn-toggle-theme" class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Chuyển chế độ Sáng / Tối" aria-label="Chuyển giao diện Sáng Tối">
+          <svg id="icon-sun" class="w-4 h-4 sm:w-5 sm:h-5 hidden dark:block text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
+          <svg id="icon-moon" class="w-4 h-4 sm:w-5 sm:h-5 block dark:hidden text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-5xl mx-auto px-4 pt-4 sm:pt-6 pb-safe">
+
+    <!-- Optional Demo Data Banner (shown only when user has 0 logged days) -->
+    <div id="demo-banner" class="hidden mb-4 p-3.5 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/50 dark:to-teal-950/40 border border-emerald-200/80 dark:border-emerald-800/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-fade-up">
+      <div class="flex items-start sm:items-center gap-2.5">
+        <span class="text-lg leading-none mt-0.5 sm:mt-0">✨</span>
+        <p class="text-xs sm:text-sm text-emerald-900 dark:text-emerald-200">
+          Chào mừng bạn! Chỉ cần học <strong>1–2 kỹ năng (tổng 60 phút)</strong> là đạt 100% hôm nay, hoặc nạp <strong>dữ liệu mẫu 21 ngày</strong> để xem trước bảng nhiệt &amp; cân bằng tuần.
+        </p>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="btn-load-demo" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition-colors">
+          Xem thử dữ liệu mẫu
+        </button>
+        <button id="btn-dismiss-demo" class="px-2.5 py-1.5 rounded-xl text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-xs font-medium transition-colors">
+          Ẩn
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 1: TODAY ==================== -->
+    <section id="view-today" class="tab-view space-y-5">
+      <!-- Date Bar & Atomic Rule Banner -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <button id="btn-prev-day" class="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" aria-label="Ngày hôm trước">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <div class="text-center sm:text-left min-w-[165px]">
+            <div class="flex items-center justify-center sm:justify-start gap-2">
+              <h2 id="selected-date-label" class="text-base sm:text-lg font-bold">Hôm nay</h2>
+              <button id="btn-jump-today" class="hidden text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200 transition-colors">Về hôm nay</button>
+            </div>
+            <p id="selected-date-sub" class="text-xs text-slate-500 dark:text-slate-400"></p>
+          </div>
+          <button id="btn-next-day" class="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:pointer-events-none transition-colors" aria-label="Ngày hôm sau">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <!-- Weekly Rest / Atomic Rule Banner -->
+        <div id="atomic-rule-banner" class="px-3.5 py-2 rounded-xl border text-xs font-medium flex items-center gap-2">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- 2-Column Layout on Desktop -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        <!-- Left Main Column (7 cols) -->
+        <div class="lg:col-span-7 space-y-5">
+
+          <!-- Energy Check-in + Flexible Rest Day Card -->
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <span>⚡</span> Năng lượng hôm nay của bạn?
+                </h3>
+                <p id="energy-mode-hint" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Chọn mức năng lượng để điều chỉnh mục tiêu phút học hôm nay.</p>
+              </div>
+              <span id="energy-target-badge" class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 shrink-0">Mục tiêu 60p</span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2.5" role="radiogroup" aria-label="Mức năng lượng">
+              <button data-energy="low" class="energy-btn group flex flex-col items-center justify-center p-3 rounded-xl border-2 text-center transition-all">
+                <span class="text-xl sm:text-2xl mb-1">🪫</span>
+                <span class="text-xs sm:text-sm font-bold">Cạn pin</span>
+                <span class="text-[10px] sm:text-[11px] opacity-75 mt-0.5">Giữ đà 20p</span>
+              </button>
+              <button data-energy="medium" class="energy-btn group flex flex-col items-center justify-center p-3 rounded-xl border-2 text-center transition-all">
+                <span class="text-xl sm:text-2xl mb-1">⚡</span>
+                <span class="text-xs sm:text-sm font-bold">Bình thường</span>
+                <span class="text-[10px] sm:text-[11px] opacity-75 mt-0.5">Chuẩn 60p</span>
+              </button>
+              <button data-energy="high" class="energy-btn group flex flex-col items-center justify-center p-3 rounded-xl border-2 text-center transition-all">
+                <span class="text-xl sm:text-2xl mb-1">🔥</span>
+                <span class="text-xs sm:text-sm font-bold">Sung sức</span>
+                <span class="text-[10px] sm:text-[11px] opacity-75 mt-0.5">Tăng tốc 80p</span>
+              </button>
+            </div>
+
+            <!-- Flexible Rest Day Toggle (1/week) -->
+            <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
+              <div class="text-xs text-slate-500 dark:text-slate-400">
+                <span class="font-semibold text-slate-700 dark:text-slate-200">Ngày nghỉ linh hoạt tuần này:</span>
+                <span id="rest-day-quota-text">0/1 đã dùng</span>
+              </div>
+              <button type="button" id="btn-toggle-rest-day" class="px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors flex items-center gap-1.5">
+                <span>🛌</span>
+                <span id="btn-rest-day-label">Đánh dấu ngày nghỉ hôm nay</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Smart Recommendation Banner (Balances Weekly Skill Minutes) -->
+          <div id="smart-suggestion-card" class="rounded-2xl border p-4 shadow-sm bg-gradient-to-br from-indigo-50/90 to-sky-50/70 dark:from-indigo-950/40 dark:to-sky-950/30 border-indigo-200/80 dark:border-indigo-800/50">
+            <div class="flex items-start justify-between gap-3">
+              <div class="space-y-1">
+                <div class="flex items-center gap-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-300">
+                  <span>🎯</span> Gợi ý 1–2 kỹ năng hôm nay để cân bằng tuần
+                </div>
+                <p id="smart-suggestion-text" class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed"></p>
+              </div>
+              <button type="button" id="btn-apply-suggestion" class="shrink-0 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-colors">
+                Hoàn thành gợi ý
+              </button>
+            </div>
+          </div>
+
+          <!-- Adaptive English Habits Checklist Card -->
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white">Chọn 1–2 kỹ năng học hôm nay</h3>
+                <p id="habits-progress-text" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">0 / 60 phút · 0 kỹ năng</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span id="habits-percent-badge" class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400">0%</span>
+                <button id="btn-quick-manage-habits" class="text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                  Tùy chỉnh
+                </button>
+              </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mb-4">
+              <div id="habits-progress-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+
+            <!-- Rest Day Overlay Notice (when today is marked as rest day) -->
+            <div id="rest-day-notice" class="hidden mb-3 p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/50 text-xs text-indigo-800 dark:text-indigo-200 flex items-center gap-2">
+              <span>🛌</span>
+              <span>Hôm nay là <strong>Ngày nghỉ linh hoạt</strong> trong tuần — chuỗi Streak của bạn vẫn được giữ nguyên! (Nếu vẫn muốn học thêm, cứ tích bình thường nhé.)</span>
+            </div>
+
+            <!-- Habits List -->
+            <div id="today-habits-list" class="space-y-2.5">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Daily 1-Line Reflection / New Word -->
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+              <label for="daily-note-input" class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <span>📝</span> 1 từ mới hoặc ghi chú hôm nay
+              </label>
+              <span id="note-saved-indicator" class="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium opacity-0 transition-opacity">Đã lưu</span>
+            </div>
+            <textarea id="daily-note-input" rows="2" placeholder="Ví dụ: 'consistency beats intensity' — sự đều đặn quan trọng hơn cường độ..." class="w-full rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-all resize-none"></textarea>
+          </div>
+        </div>
+
+        <!-- Right Sidebar Column (5 cols on desktop) -->
+        <div class="lg:col-span-5 space-y-5">
+          <!-- Quick Stats Grid -->
+          <div class="grid grid-cols-3 gap-2.5">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-3.5 shadow-sm">
+              <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Chuỗi giữ nhịp</p>
+              <p class="text-xl font-extrabold text-amber-600 dark:text-amber-400 mt-1"><span id="stat-current-streak">0</span> <span class="text-xs font-semibold">ngày</span></p>
+            </div>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-3.5 shadow-sm">
+              <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Kỷ lục</p>
+              <p class="text-xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1"><span id="stat-best-streak">0</span> <span class="text-xs font-semibold">ngày</span></p>
+            </div>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-3.5 shadow-sm">
+              <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Tuần này</p>
+              <p class="text-xl font-extrabold text-sky-600 dark:text-sky-400 mt-1"><span id="stat-week-mins">0</span><span class="text-xs font-semibold text-slate-400">/360p</span></p>
+            </div>
+          </div>
+
+          <!-- Weekly Skill Balance Tracker Card -->
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <span>⚖️</span> Cân bằng kỹ năng tuần này
+              </h3>
+              <span id="weekly-sessions-badge" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300">0/6 buổi</span>
+            </div>
+            <p id="weekly-balance-subtitle" class="text-[11px] text-slate-500 dark:text-slate-400 mb-3.5">Mục tiêu đều nhau: 72 phút / kỹ năng (Thứ 2 – CN)</p>
+            <div id="weekly-balance-bars" class="space-y-2.5">
+              <!-- Dynamically rendered skill balance progress bars -->
+            </div>
+          </div>
+
+          <!-- Mini Heatmap Preview -->
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white">Bảng nhiệt 8 tuần gần nhất</h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Chạm vào ô bất kỳ để xem hoặc sửa</p>
+              </div>
+              <button id="btn-goto-full-heatmap" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">Xem tất cả →</button>
+            </div>
+            <div id="mini-heatmap-container" class="overflow-x-auto pb-1">
+              <!-- Mini heatmap rendered here -->
+            </div>
+            <div class="flex items-center justify-between mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
+              <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-[3px] bg-indigo-300 dark:bg-indigo-500/80"></span>
+                <span>Nghỉ tuần</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span>0%</span>
+                <span class="w-3 h-3 rounded-[3px] bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60"></span>
+                <span class="w-3 h-3 rounded-[3px] bg-emerald-200 dark:bg-emerald-900/70"></span>
+                <span class="w-3 h-3 rounded-[3px] bg-emerald-400 dark:bg-emerald-700"></span>
+                <span class="w-3 h-3 rounded-[3px] bg-emerald-500 dark:bg-emerald-500"></span>
+                <span class="w-3 h-3 rounded-[3px] bg-emerald-700 dark:bg-emerald-400"></span>
+                <span>100%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Atomic Tip Card -->
+          <div class="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-900 text-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-700/50">
+            <div class="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-1.5">
+              <span>💡</span> Nguyên tắc Atomic Habits
+            </div>
+            <p id="atomic-tip-text" class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+              Mỗi ngày chỉ cần tập trung sâu 1–2 kỹ năng đủ 60 phút, sau 6 buổi bạn sẽ hoàn thành tròn 360 phút cân bằng cả 5 kỹ năng mà không hề bị ngợp.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: FULL HEATMAP ==================== -->
+    <section id="view-heatmap" class="tab-view hidden space-y-5">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-6 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+          <div>
+            <h2 class="text-base sm:text-lg font-bold">Bảng nhiệt tiến bộ (16 tuần)</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Xanh đậm = đạt 100% mục tiêu phút ngày (từ 1–2 kỹ năng). Tím = Ngày nghỉ linh hoạt (1 ngày/tuần).</p>
+          </div>
+          <div class="flex items-center gap-3 text-xs font-medium">
+            <span class="text-slate-500 dark:text-slate-400">Tổng buổi học: <strong id="heatmap-total-days" class="text-slate-900 dark:text-white">0</strong></span>
+            <span class="text-slate-500 dark:text-slate-400">Tổng phút: <strong id="heatmap-total-mins" class="text-emerald-600 dark:text-emerald-400">0</strong></span>
+          </div>
+        </div>
+
+        <div id="full-heatmap-container" class="overflow-x-auto pb-2">
+          <!-- 16-week heatmap rendered here -->
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
+          <span>Gợi ý: Bấm vào bất kỳ ô nào để xem chi tiết ngày đó.</span>
+          <div class="flex items-center gap-1.5">
+            <span class="w-3.5 h-3.5 rounded bg-indigo-300 dark:bg-indigo-500/80"></span>
+            <span class="mr-2">Nghỉ tuần</span>
+            <span>0%</span>
+            <span class="w-3.5 h-3.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"></span>
+            <span class="w-3.5 h-3.5 rounded bg-emerald-200 dark:bg-emerald-900/70"></span>
+            <span class="w-3.5 h-3.5 rounded bg-emerald-400 dark:bg-emerald-700"></span>
+            <span class="w-3.5 h-3.5 rounded bg-emerald-500 dark:bg-emerald-500"></span>
+            <span class="w-3.5 h-3.5 rounded bg-emerald-700 dark:bg-emerald-400"></span>
+            <span>100%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Day Inspector + Recent Notes -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div id="heatmap-day-detail" class="lg:col-span-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+          <!-- Populated when a day is selected -->
+        </div>
+
+        <div class="lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+          <h3 class="text-sm font-bold mb-3 flex items-center gap-1.5"><span>📖</span> Kho từ mới &amp; Ghi chú gần đây</h3>
+          <div id="recent-notes-list" class="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+            <!-- Recent notes -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: STATS ==================== -->
+    <section id="view-stats" class="tab-view hidden space-y-5">
+      <!-- Insight Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-sm">
+          <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+            <span>Ngày Cạn pin</span>
+            <span>🪫</span>
+          </div>
+          <p id="insight-low-avg" class="text-lg font-extrabold mt-1">0 phút/ngày</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Trung bình giữ mạch khi mệt</p>
+        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-sm">
+          <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+            <span>Ngày Bình thường</span>
+            <span>⚡</span>
+          </div>
+          <p id="insight-med-avg" class="text-lg font-extrabold mt-1">0 phút/ngày</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Nhịp độ chuẩn 60p/ngày</p>
+        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-sm">
+          <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+            <span>Ngày Sung sức</span>
+            <span>🔥</span>
+          </div>
+          <p id="insight-high-avg" class="text-lg font-extrabold mt-1">0 phút/ngày</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Bứt tốc bù giờ cho cả tuần</p>
+        </div>
+      </div>
+
+      <!-- Charts Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <!-- Energy vs Study Minutes Chart -->
+        <div class="lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-sm font-bold">Năng lượng vs. Thời gian học (14 ngày)</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Đối chiếu mức năng lượng với số phút học thực tế</p>
+            </div>
+          </div>
+          <div class="relative h-64 sm:h-72 w-full">
+            <canvas id="chart-energy-minutes"></canvas>
+          </div>
+        </div>
+
+        <!-- Skill Breakdown Chart -->
+        <div class="lg:col-span-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+          <div class="mb-3">
+            <h3 class="text-sm font-bold">Cân bằng kỹ năng tuần này vs. Mục tiêu</h3>
+            <p id="chart-skills-subtitle" class="text-xs text-slate-500 dark:text-slate-400">So sánh số phút tuần hiện tại với mốc đều nhau</p>
+          </div>
+          <div class="relative h-64 sm:h-72 w-full">
+            <canvas id="chart-skills"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: HABITS MANAGER ==================== -->
+    <section id="view-habits" class="tab-view hidden space-y-5">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-6 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+          <div>
+            <h2 class="text-base sm:text-lg font-bold">Quản lý thói quen Tiếng Anh</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Tổng mục tiêu tuần (360 phút = 6 buổi × 60p) tự động chia đều cho số kỹ năng đang bật.</p>
+          </div>
+          <button id="btn-open-add-habit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-sm transition-colors flex items-center justify-center gap-1.5 shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Thêm thói quen
+          </button>
+        </div>
+
+        <div id="habits-manager-list" class="space-y-3">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="md:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-2 py-1.5" aria-label="Điều hướng di động">
+    <div class="grid grid-cols-4 gap-1 max-w-md mx-auto">
+      <button data-tab="today" class="mobile-nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[11px] font-semibold transition-colors">
+        <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span>Hôm nay</span>
+      </button>
+      <button data-tab="heatmap" class="mobile-nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[11px] font-semibold transition-colors">
+        <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+        <span>Bảng nhiệt</span>
+      </button>
+      <button data-tab="stats" class="mobile-nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[11px] font-semibold transition-colors">
+        <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        <span>Thống kê</span>
+      </button>
+      <button data-tab="habits" class="mobile-nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[11px] font-semibold transition-colors">
+        <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+        <span>Thói quen</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ==================== MODAL: ADD / EDIT HABIT ==================== -->
+  <div id="modal-habit" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg max-h-[90vh] overflow-y-auto p-5 shadow-xl animate-fade-up">
+      <div class="flex items-center justify-between mb-4">
+        <h3 id="modal-habit-title" class="text-base font-bold">Thêm thói quen mới</h3>
+        <button id="btn-close-habit-modal" class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="Đóng">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form id="form-habit" class="space-y-4">
+        <input type="hidden" id="habit-edit-id" />
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-2">
+            <label for="habit-name" class="block text-xs font-semibold mb-1">Tên thói quen</label>
+            <input id="habit-name" type="text" required placeholder="Ví dụ: Luyện Phát âm (Pronunciation)" class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/40" />
+          </div>
+          <div>
+            <label for="habit-category" class="block text-xs font-semibold mb-1">Kỹ năng</label>
+            <select id="habit-category" class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/40">
+              <option value="Nghe">🎧 Nghe</option>
+              <option value="Nói">🗣️ Nói</option>
+              <option value="Đọc">📖 Đọc</option>
+              <option value="Viết">✍️ Viết</option>
+              <option value="Từ vựng">🧠 Từ vựng</option>
+              <option value="Khác">⭐ Khác</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="space-y-3 pt-1">
+          <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Mục tiêu gợi ý mỗi phiên theo mức năng lượng</p>
+
+          <!-- Low -->
+          <div class="p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/70 dark:border-amber-800/40 grid grid-cols-1 sm:grid-cols-4 gap-2">
+            <div class="sm:col-span-3">
+              <label for="habit-low-desc" class="block text-[11px] font-semibold text-amber-800 dark:text-amber-300 mb-1">🪫 Ngày Cạn pin (Giữ đà)</label>
+              <input id="habit-low-desc" type="text" required placeholder="Ví dụ: Nghe 1 đoạn ngắn 15–20 phút" class="w-full rounded-lg bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-800/60 px-2.5 py-1.5 text-xs focus:outline-none" />
+            </div>
+            <div>
+              <label for="habit-low-mins" class="block text-[11px] font-semibold text-amber-800 dark:text-amber-300 mb-1">Số phút</label>
+              <input id="habit-low-mins" type="number" min="5" max="180" value="20" required class="w-full rounded-lg bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-800/60 px-2.5 py-1.5 text-xs focus:outline-none" />
+            </div>
+          </div>
+
+          <!-- Medium -->
+          <div class="p-3 rounded-xl bg-sky-50/70 dark:bg-sky-950/30 border border-sky-200/70 dark:border-sky-800/40 grid grid-cols-1 sm:grid-cols-4 gap-2">
+            <div class="sm:col-span-3">
+              <label for="habit-med-desc" class="block text-[11px] font-semibold text-sky-800 dark:text-sky-300 mb-1">⚡ Ngày Bình thường (1 phiên 30p)</label>
+              <input id="habit-med-desc" type="text" required placeholder="Ví dụ: Nghe podcast &amp; ghi chú ý chính" class="w-full rounded-lg bg-white dark:bg-slate-900 border border-sky-200 dark:border-sky-800/60 px-2.5 py-1.5 text-xs focus:outline-none" />
+            </div>
+            <div>
+              <label for="habit-med-mins" class="block text-[11px] font-semibold text-sky-800 dark:text-sky-300 mb-1">Số phút</label>
+              <input id="habit-med-mins" type="number" min="5" max="180" value="30" required class="w-full rounded-lg bg-white dark:bg-slate-900 border border-sky-200 dark:border-sky-800/60 px-2.5 py-1.5 text-xs focus:outline-none" />
+            </div>
+          </div>
+
+          <!-- High -->
+          <div class="p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/70 dark:border-emerald-800/40 grid grid-cols-1 sm:grid-cols-4 gap-2">
+            <div class="sm:col-span-3">
+              <label for="habit-high-desc" class="block text-[11px] font-semibold text-emerald-800 dark:text-emerald-300 mb-1">🔥 Ngày Sung sức (Chuyên sâu 40p)</label>
+              <input id="habit-high-desc" type="text" required placeholder="Ví dụ: Nghe chép chính tả &amp; phân tích ngữ điệu" class="w-full rounded-lg bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-1.5 text-xs focus:outline-none" />
+            </div>
+            <div>
+              <label for="habit-high-mins" class="block text-[11px] font-semibold text-emerald-800 dark:text-emerald-300 mb-1">Số phút</label>
+              <input id="habit-high-mins" type="number" min="5" max="240" value="40" required class="w-full rounded-lg bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-1.5 text-xs focus:outline-none" />
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" id="btn-cancel-habit" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Hủy</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm">Lưu thói quen</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: SYNC / BACKUP ==================== -->
+  <div id="modal-sync" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-5 shadow-xl animate-fade-up space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold">Sao lưu &amp; Chuyển thiết bị</h3>
+        <button id="btn-close-sync-modal" class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="Đóng">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+        Dữ liệu của bạn được lưu an toàn ngay trên trình duyệt. Để chuyển dữ liệu giữa điện thoại và máy tính, hãy xuất file JSON và nhập lại trên thiết bị kia.
+      </p>
+
+      <div class="grid grid-cols-2 gap-2.5">
+        <button id="btn-export-json" class="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          Tải file JSON
+        </button>
+        <label for="input-import-json" class="cursor-pointer flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          Nhập file JSON
+          <input id="input-import-json" type="file" accept=".json,application/json" class="hidden" />
+        </label>
+      </div>
+
+      <button id="btn-copy-json" class="w-full py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-colors">
+        Sao chép mã sao lưu (Clipboard)
+      </button>
+
+      <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+        <button id="btn-sync-load-demo" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">Nạp dữ liệu mẫu 21 ngày</button>
+        <button id="btn-request-reset" class="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline">Xóa toàn bộ dữ liệu</button>
+      </div>
+
+      <!-- Inline Confirm Reset Box -->
+      <div id="confirm-reset-box" class="hidden p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 space-y-2">
+        <p class="text-xs text-rose-800 dark:text-rose-200 font-medium">Bạn chắc chắn muốn xóa toàn bộ lịch sử học tập?</p>
+        <div class="flex items-center justify-end gap-2">
+          <button id="btn-cancel-reset" class="px-3 py-1 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-slate-800">Không</button>
+          <button id="btn-confirm-reset" class="px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold">Xóa ngay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-all duration-200 translate-y-2">
+    <div id="toast-inner" class="px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-semibold shadow-lg flex items-center gap-2 whitespace-nowrap">
+      <span id="toast-text">Đã lưu</span>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const STORAGE_KEY = 'atomic_english_tracker_v2';
+      const WEEKLY_TOTAL_GOAL_MINS = 360; // 6 sessions x 60 mins
+      const WEEKLY_SESSIONS_GOAL = 6;
+      const WEEKLY_REST_QUOTA = 1;
+      const ENERGY_DAILY_GOALS = { low: 20, medium: 60, high: 80 };
+
+      const DEFAULT_HABITS = [
+        {
+          id: 'h_listening',
+          name: 'Luyện Nghe (Listening)',
+          category: 'Nghe',
+          active: true,
+          targets: {
+            low: { desc: 'Nghe 1 đoạn podcast nhẹ nhàng để giữ nhịp', mins: 20 },
+            medium: { desc: 'Nghe tập trung & ghi ý chính (1 phiên chuẩn)', mins: 30 },
+            high: { desc: 'Nghe chủ động & chép chính tả (Dictation)', mins: 40 }
+          }
+        },
+        {
+          id: 'h_speaking',
+          name: 'Luyện Nói (Speaking)',
+          category: 'Nói',
+          active: true,
+          targets: {
+            low: { desc: 'Đọc to & nhại giọng (Shadowing) nhẹ nhàng', mins: 20 },
+            medium: { desc: 'Shadowing & tự nói 1 chủ đề quen thuộc', mins: 30 },
+            high: { desc: 'Nói sâu theo chủ đề, ghi âm & tự sửa lỗi', mins: 40 }
+          }
+        },
+        {
+          id: 'h_reading',
+          name: 'Luyện Đọc (Reading)',
+          category: 'Đọc',
+          active: true,
+          targets: {
+            low: { desc: 'Đọc 1 bài tin ngắn tiếng Anh nhẹ nhàng', mins: 20 },
+            medium: { desc: 'Đọc sâu 1–2 bài báo & phân tích câu hay', mins: 30 },
+            high: { desc: 'Đọc bài dài / chương sách & tóm tắt ý', mins: 40 }
+          }
+        },
+        {
+          id: 'h_writing',
+          name: 'Luyện Viết (Writing)',
+          category: 'Viết',
+          active: true,
+          targets: {
+            low: { desc: 'Viết 1 đoạn nhật ký ngắn 5–6 câu', mins: 20 },
+            medium: { desc: 'Viết 1 đoạn văn 150 từ & tự rà ngữ pháp', mins: 30 },
+            high: { desc: 'Viết bài hoàn chỉnh & nâng cấp từ vựng', mins: 40 }
+          }
+        },
+        {
+          id: 'h_vocab',
+          name: 'Từ vựng (Vocabulary)',
+          category: 'Từ vựng',
+          active: true,
+          targets: {
+            low: { desc: 'Ôn lại flashcard & cụm từ cũ', mins: 20 },
+            medium: { desc: 'Học từ mới theo ngữ cảnh & đặt câu ví dụ', mins: 30 },
+            high: { desc: 'Mở rộng collocations & ôn tập chuyên sâu', mins: 40 }
+          }
+        }
+      ];
+
+      const CATEGORY_META = {
+        'Nghe': { icon: '🎧', color: '#0ea5e9', badge: 'bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300' },
+        'Nói': { icon: '🗣️', color: '#f59e0b', badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300' },
+        'Đọc': { icon: '📖', color: '#10b981', badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300' },
+        'Viết': { icon: '✍️', color: '#8b5cf6', badge: 'bg-violet-100 text-violet-700 dark:bg-violet-900/50 dark:text-violet-300' },
+        'Từ vựng': { icon: '🧠', color: '#ec4899', badge: 'bg-pink-100 text-pink-700 dark:bg-pink-900/50 dark:text-pink-300' },
+        'Khác': { icon: '⭐', color: '#64748b', badge: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300' }
+      };
+
+      const ATOMIC_TIPS = [
+        'Mỗi ngày chỉ cần tập trung 1–2 kỹ năng đủ 60 phút là đã hoàn thành 100% — sau 6 buổi trong tuần cả 5 kỹ năng sẽ tự động cân bằng đều nhau.',
+        'Bạn có 1 ngày nghỉ linh hoạt bất kỳ mỗi tuần mà không lo gãy chuỗi. Hãy dùng nó vào ngày bận nhất để giữ sức bền đường dài.',
+        'Khi thấy một kỹ năng bị hụt giờ trong tuần, hãy bấm theo khung "Gợi ý hôm nay" để kéo cân bằng trở lại mà không phải suy nghĩ hôm nay học gì.',
+        'Ngày Cạn pin chỉ cần 20 phút để giữ nhịp, hôm sau Sung sức tăng tốc 80 phút là tổng tuần vẫn tròn 360 phút.',
+        'Gắn thói quen tiếng Anh vào một khung giờ cố định trong ngày giúp giảm ma sát ra quyết định xuống gần như bằng 0.'
+      ];
+
+      // ---- Date & Week Helpers (Monday - Sunday) ----
+      function toDateKey(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+
+      function parseDateKey(key) {
+        const [y, m, d] = key.split('-').map(Number);
+        return new Date(y, m - 1, d);
+      }
+
+      function addDays(key, delta) {
+        const dt = parseDateKey(key);
+        dt.setDate(dt.getDate() + delta);
+        return toDateKey(dt);
+      }
+
+      function getTodayKey() {
+        return toDateKey(new Date());
+      }
+
+      function getWeekStartKey(dateKey) {
+        const dt = parseDateKey(dateKey);
+        const dow = (dt.getDay() + 6) % 7; // Mon=0 ... Sun=6
+        dt.setDate(dt.getDate() - dow);
+        return toDateKey(dt);
+      }
+
+      function getWeekDateKeys(dateKey) {
+        const start = getWeekStartKey(dateKey);
+        const keys = [];
+        for (let i = 0; i < 7; i++) {
+          keys.push(addDays(start, i));
+        }
+        return keys;
+      }
+
+      function formatVietnameseDate(key) {
+        const dt = parseDateKey(key);
+        const days = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
+        return `${days[dt.getDay()]}, ${String(dt.getDate()).padStart(2, '0')}/${String(dt.getMonth() + 1).padStart(2, '0')}/${dt.getFullYear()}`;
+      }
+
+      function formatShortDate(key) {
+        const [, m, d] = key.split('-');
+        return `${d}/${m}`;
+      }
+
+      // ---- State Management ----
+      let state = {
+        theme: 'light',
+        activeTab: 'today',
+        selectedDate: getTodayKey(),
+        inspectedDate: getTodayKey(),
+        demoDismissed: false,
+        habits: JSON.parse(JSON.stringify(DEFAULT_HABITS)),
+        logs: {} // { 'YYYY-MM-DD': { energy: 'low'|'medium'|'high', isRestDay: boolean, completed: { habitId: mins }, note: '' } }
+      };
+
+      let chartEnergyMinutes = null;
+      let chartSkills = null;
+      let toastTimer = null;
+      let noteSaveTimer = null;
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('atomic_english_tracker_v1');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === 'object') {
+              if (parsed.theme === 'dark' || parsed.theme === 'light') state.theme = parsed.theme;
+              if (Array.isArray(parsed.habits) && parsed.habits.length > 0) state.habits = parsed.habits;
+              if (parsed.logs && typeof parsed.logs === 'object') state.logs = parsed.logs;
+              if (typeof parsed.demoDismissed === 'boolean') state.demoDismissed = parsed.demoDismissed;
+            }
+          }
+        } catch (e) {
+          // Storage blocked; keep in-memory state
+        }
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            theme: state.theme,
+            habits: state.habits,
+            logs: state.logs,
+            demoDismissed: state.demoDismissed
+          }));
+        } catch (e) {
+          // Ignore storage quota / sandbox restrictions
+        }
+      }
+
+      function getDayLog(dateKey) {
+        return state.logs[dateKey] || { energy: 'medium', isRestDay: false, completed: {}, note: '' };
+      }
+
+      function ensureDayLog(dateKey) {
+        if (!state.logs[dateKey]) {
+          state.logs[dateKey] = { energy: 'medium', isRestDay: false, completed: {}, note: '' };
+        }
+        return state.logs[dateKey];
+      }
+
+      function getActiveHabits() {
+        return state.habits.filter(h => h.active);
+      }
+
+      function getDailyGoalMins(energy) {
+        return ENERGY_DAILY_GOALS[energy] || 60;
+      }
+
+      function getDayStats(dateKey) {
+        const log = state.logs[dateKey];
+        const energy = (log && log.energy) || 'medium';
+        const isRestDay = Boolean(log && log.isRestDay);
+        const goalMins = getDailyGoalMins(energy);
+
+        if (!log || !log.completed) {
+          return { doneCount: 0, mins: 0, goalMins, percent: 0, energy, isRestDay };
+        }
+        let doneCount = 0;
+        let mins = 0;
+        Object.keys(log.completed).forEach(hid => {
+          const val = Number(log.completed[hid]) || 0;
+          if (val > 0) {
+            doneCount += 1;
+            mins += val;
+          }
+        });
+        const percent = goalMins > 0 ? Math.min(100, Math.round((mins / goalMins) * 100)) : 0;
+        return { doneCount, mins, goalMins, percent, energy, isRestDay };
+      }
+
+      function getWeeklySummary(referenceDateKey) {
+        const weekKeys = getWeekDateKeys(referenceDateKey);
+        const activeHabits = getActiveHabits();
+        const perHabitGoal = activeHabits.length > 0
+          ? Math.round(WEEKLY_TOTAL_GOAL_MINS / activeHabits.length)
+          : WEEKLY_TOTAL_GOAL_MINS;
+
+        const habitMins = {};
+        activeHabits.forEach(h => { habitMins[h.id] = 0; });
+
+        let totalMins = 0;
+        let studySessions = 0;
+        const restDays = [];
+
+        weekKeys.forEach(k => {
+          const log = state.logs[k];
+          if (!log) return;
+          if (log.isRestDay) restDays.push(k);
+          let dayMins = 0;
+          if (log.completed) {
+            Object.entries(log.completed).forEach(([hid, m]) => {
+              const val = Number(m) || 0;
+              if (val > 0) {
+                dayMins += val;
+                if (habitMins.hasOwnProperty(hid)) {
+                  habitMins[hid] += val;
+                }
+              }
+            });
+          }
+          if (dayMins > 0) {
+            totalMins += dayMins;
+            studySessions += 1;
+          }
+        });
+
+        const habitsProgress = activeHabits.map(h => {
+          const mins = habitMins[h.id] || 0;
+          const remaining = Math.max(0, perHabitGoal - mins);
+          const pct = perHabitGoal > 0 ? Math.min(100, Math.round((mins / perHabitGoal) * 100)) : 0;
+          return { habit: h, mins, goal: perHabitGoal, remaining, pct };
+        });
+
+        return {
+          weekKeys,
+          totalMins,
+          studySessions,
+          restDays,
+          perHabitGoal,
+          habitsProgress
+        };
+      }
+
+      function getSmartRecommendation(dateKey) {
+        const weekly = getWeeklySummary(dateKey);
+        const dayStats = getDayStats(dateKey);
+        const remainingForToday = Math.max(0, dayStats.goalMins - dayStats.mins);
+
+        // Sort active habits by largest weekly deficit, tie-break by least studied this week
+        const deficits = weekly.habitsProgress
+          .filter(item => item.remaining > 0)
+          .sort((a, b) => b.remaining - a.remaining || a.mins - b.mins);
+
+        if (deficits.length === 0) {
+          return { allBalanced: true, picks: [], targetMins: remainingForToday };
+        }
+
+        // On low energy (20p) or when remaining today <= 30p, suggest 1 skill; otherwise suggest up to 2 skills
+        const budget = remainingForToday > 0 ? remainingForToday : dayStats.goalMins;
+        const pickCount = (dayStats.energy === 'low' || budget <= 30 || deficits.length === 1) ? 1 : 2;
+        const chosen = deficits.slice(0, pickCount);
+
+        let picks = [];
+        if (chosen.length === 1) {
+          picks = [{ habit: chosen[0].habit, mins: budget, weeklyRemaining: chosen[0].remaining }];
+        } else {
+          const totalDef = chosen[0].remaining + chosen[1].remaining;
+          let m1 = Math.round((budget * (chosen[0].remaining / totalDef)) / 5) * 5;
+          m1 = Math.max(15, Math.min(budget - 15, m1));
+          const m2 = Math.max(10, budget - m1);
+          picks = [
+            { habit: chosen[0].habit, mins: m1, weeklyRemaining: chosen[0].remaining },
+            { habit: chosen[1].habit, mins: m2, weeklyRemaining: chosen[1].remaining }
+          ];
+        }
+
+        return { allBalanced: false, picks, targetMins: budget };
+      }
+
+      function getDaysSinceLastStudied(habitId, referenceDateKey) {
+        for (let i = 1; i <= 30; i++) {
+          const k = addDays(referenceDateKey, -i);
+          const log = state.logs[k];
+          if (log && log.completed && Number(log.completed[habitId]) > 0) {
+            return i;
+          }
+        }
+        return null;
+      }
+
+      function calculateStreaks() {
+        const today = getTodayKey();
+        const allKeys = Object.keys(state.logs);
+
+        const activeSet = new Set();
+        const studyDates = [];
+        let totalMins = 0;
+
+        allKeys.forEach(k => {
+          const st = getDayStats(k);
+          if (st.mins > 0) {
+            activeSet.add(k);
+            studyDates.push(k);
+            totalMins += st.mins;
+          } else if (st.isRestDay) {
+            // Count rest day as streak-preserving
+            activeSet.add(k);
+          }
+        });
+
+        studyDates.sort();
+        if (studyDates.length === 0) {
+          return { current: 0, best: 0, totalDays: 0, totalMins: 0 };
+        }
+
+        // Current streak (counts study days + protected rest days up to 1/week)
+        let current = 0;
+        let cursor = activeSet.has(today) ? today : addDays(today, -1);
+        while (activeSet.has(cursor)) {
+          current += 1;
+          cursor = addDays(cursor, -1);
+        }
+
+        // Best streak
+        const sortedActive = Array.from(activeSet).sort();
+        let best = 0;
+        let run = 0;
+        let prev = null;
+        sortedActive.forEach(d => {
+          if (prev && addDays(prev, 1) === d) {
+            run += 1;
+          } else {
+            run = 1;
+          }
+          if (run > best) best = run;
+          prev = d;
+        });
+
+        return { current, best, totalDays: studyDates.length, totalMins };
+      }
+
+      function showToast(msg) {
+        const toast = document.getElementById('toast');
+        const text = document.getElementById('toast-text');
+        text.textContent = msg;
+        toast.classList.remove('opacity-0', 'translate-y-2');
+        toast.classList.add('opacity-100', 'translate-y-0');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          toast.classList.add('opacity-0', 'translate-y-2');
+          toast.classList.remove('opacity-100', 'translate-y-0');
+        }, 2500);
+      }
+
+      // ---- Theme Handling ----
+      function applyTheme() {
+        const html = document.documentElement;
+        if (state.theme === 'dark') {
+          html.classList.add('dark');
+          html.classList.remove('light');
+        } else {
+          html.classList.remove('dark');
+          html.classList.add('light');
+        }
+        if (state.activeTab === 'stats') {
+          renderCharts();
+        }
+      }
+
+      function toggleTheme() {
+        state.theme = state.theme === 'dark' ? 'light' : 'dark';
+        saveState();
+        applyTheme();
+        showToast(state.theme === 'dark' ? 'Đã chuyển sang chế độ Tối' : 'Đã chuyển sang chế độ Sáng');
+      }
+
+      // ---- Tab Navigation ----
+      function setActiveTab(tab) {
+        state.activeTab = tab;
+        document.querySelectorAll('.tab-view').forEach(el => {
+          el.classList.toggle('hidden', el.id !== `view-${tab}`);
+        });
+
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+          const active = btn.dataset.tab === tab;
+          btn.className = active
+            ? 'nav-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm'
+            : 'nav-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
+        });
+
+        document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+          const active = btn.dataset.tab === tab;
+          btn.className = active
+            ? 'mobile-nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[11px] font-bold transition-colors text-emerald-600 dark:text-emerald-400 bg-emerald-50/80 dark:bg-emerald-950/50'
+            : 'mobile-nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-[11px] font-semibold transition-colors text-slate-500 dark:text-slate-400';
+        });
+
+        if (tab === 'heatmap') {
+          renderFullHeatmap();
+          renderHeatmapDetail();
+          renderRecentNotes();
+        } else if (tab === 'stats') {
+          renderStatsInsights();
+          renderCharts();
+        } else if (tab === 'habits') {
+          renderHabitsManager();
+        } else {
+          renderTodayView();
+        }
+      }
+
+      // ---- Heatmap Color Helper ----
+      function getHeatmapCellClass(st) {
+        if (st.isRestDay && st.mins === 0) {
+          return 'bg-indigo-300 dark:bg-indigo-500/80';
+        }
+        const percent = st.percent;
+        if (percent <= 0) return 'bg-slate-100 dark:bg-slate-800/90 border border-slate-200/70 dark:border-slate-700/60';
+        if (percent < 40) return 'bg-emerald-200 dark:bg-emerald-900/75';
+        if (percent < 70) return 'bg-emerald-400 dark:bg-emerald-700';
+        if (percent < 100) return 'bg-emerald-500 dark:bg-emerald-500';
+        return 'bg-emerald-700 dark:bg-emerald-400';
+      }
+
+      function buildHeatmapHTML(weeksCount, selectedKey) {
+        const today = getTodayKey();
+        const todayDate = parseDateKey(today);
+        const dow = (todayDate.getDay() + 6) % 7;
+        const endDate = new Date(todayDate);
+        endDate.setDate(todayDate.getDate() + (6 - dow));
+
+        const totalDays = weeksCount * 7;
+        const startDate = new Date(endDate);
+        startDate.setDate(endDate.getDate() - totalDays + 1);
+
+        const dayLabels = ['T2', '', 'T4', '', 'T6', '', 'CN'];
+        let html = `<div class="inline-flex gap-1.5 items-start">`;
+        html += `<div class="flex flex-col gap-1 pt-0.5 pr-1 text-[10px] font-medium text-slate-400 dark:text-slate-500 select-none">`;
+        dayLabels.forEach(l => {
+          html += `<span class="h-3.5 sm:h-4 leading-3.5 sm:leading-4 flex items-center">${l}</span>`;
+        });
+        html += `</div>`;
+
+        html += `<div class="flex gap-1">`;
+        for (let w = 0; w < weeksCount; w++) {
+          html += `<div class="flex flex-col gap-1">`;
+          for (let d = 0; d < 7; d++) {
+            const cellDate = new Date(startDate);
+            cellDate.setDate(startDate.getDate() + w * 7 + d);
+            const key = toDateKey(cellDate);
+            const isFuture = key > today;
+            if (isFuture) {
+              html += `<div class="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-[4px] bg-transparent"></div>`;
+            } else {
+              const st = getDayStats(key);
+              const colorCls = getHeatmapCellClass(st);
+              const selCls = key === selectedKey ? 'selected-cell' : '';
+              const title = st.isRestDay && st.mins === 0
+                ? `${formatShortDate(key)}: Ngày nghỉ linh hoạt (giữ chuỗi)`
+                : `${formatShortDate(key)}: ${st.mins}/${st.goalMins} phút (${st.percent}%) · ${st.doneCount} kỹ năng`;
+              html += `<button type="button" data-date="${key}" title="${title}" class="heatmap-cell w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-[4px] ${colorCls} ${selCls} cursor-pointer"></button>`;
+            }
+          }
+          html += `</div>`;
+        }
+        html += `</div></div>`;
+        return html;
+      }
+
+      // ---- Render Today View ----
+      function renderTodayView() {
+        const today = getTodayKey();
+        const dateKey = state.selectedDate;
+        const log = getDayLog(dateKey);
+        const energy = log.energy || 'medium';
+        const stats = getDayStats(dateKey);
+        const streaks = calculateStreaks();
+        const weekly = getWeeklySummary(dateKey);
+        const rec = getSmartRecommendation(dateKey);
+        const recommendedIds = new Set(rec.picks.map(p => p.habit.id));
+
+        // Demo banner visibility
+        const demoBanner = document.getElementById('demo-banner');
+        const hasAnyLogs = Object.keys(state.logs).some(k => getDayStats(k).mins > 0 || getDayStats(k).isRestDay);
+        demoBanner.classList.toggle('hidden', hasAnyLogs || state.demoDismissed);
+
+        // Header & Stats
+        document.getElementById('header-streak-count').textContent = streaks.current;
+        document.getElementById('stat-current-streak').textContent = streaks.current;
+        document.getElementById('stat-best-streak').textContent = streaks.best;
+        document.getElementById('stat-week-mins').textContent = weekly.totalMins;
+
+        // Date Bar
+        const isToday = dateKey === today;
+        const isYesterday = dateKey === addDays(today, -1);
+        document.getElementById('selected-date-label').textContent = isToday ? 'Hôm nay' : (isYesterday ? 'Hôm qua' : formatShortDate(dateKey));
+        document.getElementById('selected-date-sub').textContent = formatVietnameseDate(dateKey);
+        document.getElementById('btn-jump-today').classList.toggle('hidden', isToday);
+        document.getElementById('btn-next-day').disabled = dateKey >= today;
+
+        // Atomic Rule & Weekly Rest Banner
+        const ruleBanner = document.getElementById('atomic-rule-banner');
+        const todayStats = getDayStats(today);
+        const currentWeek = getWeeklySummary(today);
+        if (todayStats.mins >= todayStats.goalMins) {
+          ruleBanner.className = 'px-3.5 py-2 rounded-xl border text-xs font-medium flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/50 border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300';
+          ruleBanner.innerHTML = `<span>✅</span><span>Đạt 100% hôm nay (${todayStats.mins}p)! Tuần này: ${currentWeek.studySessions}/${WEEKLY_SESSIONS_GOAL} buổi.</span>`;
+        } else if (todayStats.isRestDay) {
+          ruleBanner.className = 'px-3.5 py-2 rounded-xl border text-xs font-medium flex items-center gap-2 bg-indigo-50 dark:bg-indigo-950/50 border-indigo-200 dark:border-indigo-800/60 text-indigo-800 dark:text-indigo-300';
+          ruleBanner.innerHTML = '<span>🛌</span><span>Đang dùng ngày nghỉ linh hoạt (1/1 tuần này) — Streak vẫn an toàn!</span>';
+        } else if (currentWeek.restDays.length >= WEEKLY_REST_QUOTA) {
+          ruleBanner.className = 'px-3.5 py-2 rounded-xl border text-xs font-medium flex items-center gap-2 bg-amber-50 dark:bg-amber-950/50 border-amber-200 dark:border-amber-800/60 text-amber-800 dark:text-amber-300';
+          ruleBanner.innerHTML = '<span>⚡</span><span>Đã dùng ngày nghỉ tuần này — học ít nhất 1 kỹ năng hôm nay để giữ chuỗi!</span>';
+        } else {
+          ruleBanner.className = 'px-3.5 py-2 rounded-xl border text-xs font-medium flex items-center gap-2 bg-slate-100 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300';
+          ruleBanner.innerHTML = `<span>🎯</span><span>Mục tiêu tuần: ${currentWeek.studySessions}/${WEEKLY_SESSIONS_GOAL} buổi · Còn 1 ngày nghỉ linh hoạt.</span>`;
+        }
+
+        // Energy Buttons
+        const energyConfig = {
+          low: {
+            label: 'Mục tiêu 20p',
+            hint: 'Ngày mệt: Chỉ cần 1 kỹ năng 20 phút để giữ mạch, hôm khác bù thêm giờ.',
+            activeCls: 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-900 dark:text-amber-200 shadow-sm',
+            badgeCls: 'bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300'
+          },
+          medium: {
+            label: 'Mục tiêu 60p',
+            hint: 'Chuẩn 1 giờ/ngày: Chọn 1–2 kỹ năng đạt tổng 60 phút là sáng 100%.',
+            activeCls: 'border-sky-500 bg-sky-50 dark:bg-sky-950/50 text-sky-900 dark:text-sky-200 shadow-sm',
+            badgeCls: 'bg-sky-100 dark:bg-sky-900/60 text-sky-800 dark:text-sky-300'
+          },
+          high: {
+            label: 'Mục tiêu 80p',
+            hint: 'Đang sung sức: Học sâu 80 phút để bứt phá hoặc bù giờ cho ngày Cạn pin.',
+            activeCls: 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-200 shadow-sm',
+            badgeCls: 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300'
+          }
+        };
+
+        document.getElementById('energy-mode-hint').textContent = energyConfig[energy].hint;
+        const badgeEl = document.getElementById('energy-target-badge');
+        badgeEl.textContent = energyConfig[energy].label;
+        badgeEl.className = `text-[11px] font-semibold px-2.5 py-1 rounded-full shrink-0 ${energyConfig[energy].badgeCls}`;
+
+        document.querySelectorAll('.energy-btn').forEach(btn => {
+          const isSelected = btn.dataset.energy === energy;
+          btn.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+          btn.className = isSelected
+            ? `energy-btn group flex flex-col items-center justify-center p-3 rounded-xl border-2 text-center transition-all ${energyConfig[btn.dataset.energy].activeCls}`
+            : 'energy-btn group flex flex-col items-center justify-center p-3 rounded-xl border-2 border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700 text-center transition-all';
+        });
+
+        // Flexible Rest Day Toggle
+        const restUsedCount = weekly.restDays.length;
+        const otherRestDay = weekly.restDays.find(d => d !== dateKey);
+        document.getElementById('rest-day-quota-text').textContent = `${restUsedCount}/${WEEKLY_REST_QUOTA} đã dùng` + (otherRestDay ? ` (${formatShortDate(otherRestDay)})` : '');
+        const restBtn = document.getElementById('btn-toggle-rest-day');
+        const restLabel = document.getElementById('btn-rest-day-label');
+        if (stats.isRestDay) {
+          restBtn.disabled = false;
+          restBtn.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold border border-indigo-400 bg-indigo-100 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-200 transition-colors flex items-center gap-1.5';
+          restLabel.textContent = 'Hủy ngày nghỉ hôm nay';
+        } else if (otherRestDay) {
+          restBtn.disabled = true;
+          restBtn.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 text-slate-400 cursor-not-allowed flex items-center gap-1.5';
+          restLabel.textContent = 'Đã dùng hết ngày nghỉ tuần';
+        } else {
+          restBtn.disabled = false;
+          restBtn.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors flex items-center gap-1.5';
+          restLabel.textContent = 'Đánh dấu ngày nghỉ hôm nay';
+        }
+        document.getElementById('rest-day-notice').classList.toggle('hidden', !stats.isRestDay);
+
+        // Smart Suggestion Card
+        const sugCard = document.getElementById('smart-suggestion-card');
+        const sugText = document.getElementById('smart-suggestion-text');
+        const sugBtn = document.getElementById('btn-apply-suggestion');
+        if (stats.isRestDay) {
+          sugCard.classList.add('hidden');
+        } else {
+          sugCard.classList.remove('hidden');
+          if (rec.allBalanced) {
+            sugText.innerHTML = `Tuyệt vời! Bạn đã đạt đủ <strong>${weekly.perHabitGoal} phút/kỹ năng</strong> cân bằng cho tuần này. Hôm nay bạn có thể tự do học kỹ năng yêu thích.`;
+            sugBtn.classList.add('hidden');
+          } else if (stats.mins >= stats.goalMins) {
+            sugText.innerHTML = `Hôm nay bạn đã hoàn thành <strong>${stats.mins}/${stats.goalMins} phút (100%)</strong>! Nếu muốn học thêm, kỹ năng đang thiếu nhất tuần này là <strong>${escapeHtml(rec.picks[0].habit.name)}</strong> (còn thiếu ${rec.picks[0].weeklyRemaining}p).`;
+            sugBtn.classList.add('hidden');
+          } else {
+            const parts = rec.picks.map(p => `<strong>${escapeHtml(p.habit.category)} (${p.mins}p)</strong>`).join(' + ');
+            sugText.innerHTML = `Đề xuất hôm nay: ${parts} để vừa đủ mốc <strong>${stats.goalMins}p</strong> vừa kéo cân bằng tuần (mục tiêu ${weekly.perHabitGoal}p/kỹ năng).`;
+            sugBtn.classList.remove('hidden');
+          }
+        }
+
+        // Progress Bar (Minutes-based 100%)
+        const extraMins = stats.mins > stats.goalMins ? ` (+${stats.mins - stats.goalMins}p vượt chỉ tiêu)` : '';
+        document.getElementById('habits-progress-text').textContent = `${stats.mins} / ${stats.goalMins} phút${extraMins} · ${stats.doneCount} kỹ năng`;
+        document.getElementById('habits-percent-badge').textContent = `${stats.percent}%`;
+        document.getElementById('habits-progress-bar').style.width = `${stats.percent}%`;
+
+        // Habits List
+        const listEl = document.getElementById('today-habits-list');
+        const activeHabits = getActiveHabits();
+        if (activeHabits.length === 0) {
+          listEl.innerHTML = `<div class="text-center py-6 text-xs text-slate-500 dark:text-slate-400">Chưa có thói quen nào đang bật. Hãy vào mục <strong>Thói quen</strong> để thêm mới.</div>`;
+        } else {
+          listEl.innerHTML = activeHabits.map(h => {
+            const target = h.targets[energy] || h.targets.medium;
+            const loggedMins = Number(log.completed && log.completed[h.id]) || 0;
+            const isDone = loggedMins > 0;
+            const cat = CATEGORY_META[h.category] || CATEGORY_META['Khác'];
+            const isRecommended = recommendedIds.has(h.id) && !isDone && !stats.isRestDay && stats.mins < stats.goalMins;
+            const wkItem = weekly.habitsProgress.find(x => x.habit.id === h.id);
+            const daysSince = getDaysSinceLastStudied(h.id, dateKey);
+            const neglectHint = (!isDone && daysSince && daysSince >= 3)
+              ? `<span class="text-[10px] font-medium text-amber-600 dark:text-amber-400">· ${daysSince} ngày chưa học</span>`
+              : (wkItem && wkItem.remaining > 0 ? `<span class="text-[10px] text-slate-400 dark:text-slate-500">· Tuần còn thiếu ${wkItem.remaining}p</span>` : `<span class="text-[10px] text-emerald-600 dark:text-emerald-400">· Đủ giờ tuần ✓</span>`);
+
+            return `
+              <div class="flex items-center gap-3 p-3 rounded-xl border transition-all ${
+                isDone
+                  ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/60'
+                  : isRecommended
+                    ? 'bg-indigo-50/40 dark:bg-indigo-950/20 border-indigo-200/90 dark:border-indigo-800/60'
+                    : 'bg-slate-50/60 dark:bg-slate-800/40 border-slate-200/70 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+              }">
+                <button type="button" data-action="toggle-habit" data-id="${h.id}" class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-all border-2 ${
+                  isDone
+                    ? 'bg-emerald-500 border-emerald-500 text-white'
+                    : 'bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 hover:border-emerald-500'
+                }" aria-label="Đánh dấu ${escapeHtml(h.name)}">
+                  ${isDone ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>' : ''}
+                </button>
+                <div class="flex-1 min-w-0 cursor-pointer" data-action="toggle-habit" data-id="${h.id}">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="text-sm font-semibold ${isDone ? 'text-emerald-800 dark:text-emerald-300' : 'text-slate-900 dark:text-slate-100'}">${escapeHtml(h.name)}</span>
+                    <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${cat.badge}">${cat.icon} ${escapeHtml(h.category)}</span>
+                    ${isRecommended ? '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300">⭐ Gợi ý</span>' : ''}
+                  </div>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">${escapeHtml(target.desc)} ${neglectHint}</p>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                  <button type="button" data-action="dec-mins" data-id="${h.id}" class="w-6 h-6 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700" aria-label="Giảm 5 phút">-</button>
+                  <span class="min-w-[44px] text-center text-xs font-bold ${isDone ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}">${isDone ? loggedMins : target.mins}p</span>
+                  <button type="button" data-action="inc-mins" data-id="${h.id}" class="w-6 h-6 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700" aria-label="Tăng 5 phút">+</button>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+
+        // Weekly Balance Sidebar Card
+        document.getElementById('weekly-sessions-badge').textContent = `${weekly.studySessions}/${WEEKLY_SESSIONS_GOAL} buổi`;
+        document.getElementById('weekly-balance-subtitle').textContent = `Mục tiêu đều nhau: ${weekly.perHabitGoal} phút / kỹ năng (Thứ 2 – CN)`;
+        const barsEl = document.getElementById('weekly-balance-bars');
+        barsEl.innerHTML = weekly.habitsProgress.map(item => {
+          const cat = CATEGORY_META[item.habit.category] || CATEGORY_META['Khác'];
+          const isComplete = item.mins >= item.goal;
+          return `
+            <div>
+              <div class="flex items-center justify-between text-xs mb-1">
+                <span class="font-semibold text-slate-700 dark:text-slate-200">${cat.icon} ${escapeHtml(item.habit.category)}</span>
+                <span class="font-bold ${isComplete ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-300'}">${item.mins}/${item.goal}p ${isComplete ? '✓' : ''}</span>
+              </div>
+              <div class="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all duration-300" style="width: ${item.pct}%; background-color: ${isComplete ? '#10b981' : cat.color};"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Daily Note
+        const noteInput = document.getElementById('daily-note-input');
+        if (noteInput.value !== (log.note || '')) {
+          noteInput.value = log.note || '';
+        }
+
+        // Mini Heatmap (8 weeks)
+        document.getElementById('mini-heatmap-container').innerHTML = buildHeatmapHTML(8, state.selectedDate);
+
+        // Rotate Atomic Tip
+        const tipIdx = parseDateKey(dateKey).getDate() % ATOMIC_TIPS.length;
+        document.getElementById('atomic-tip-text').textContent = ATOMIC_TIPS[tipIdx];
+      }
+
+      // ---- Render Full Heatmap Tab ----
+      function renderFullHeatmap() {
+        const streaks = calculateStreaks();
+        document.getElementById('heatmap-total-days').textContent = streaks.totalDays;
+        document.getElementById('heatmap-total-mins').textContent = `${streaks.totalMins} phút`;
+        document.getElementById('full-heatmap-container').innerHTML = buildHeatmapHTML(16, state.inspectedDate);
+      }
+
+      function renderHeatmapDetail() {
+        const key = state.inspectedDate;
+        const log = state.logs[key];
+        const st = getDayStats(key);
+        const container = document.getElementById('heatmap-day-detail');
+
+        const energyMap = {
+          low: { text: '🪫 Cạn pin (20p)', cls: 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300' },
+          medium: { text: '⚡ Bình thường (60p)', cls: 'bg-sky-100 text-sky-800 dark:bg-sky-900/50 dark:text-sky-300' },
+          high: { text: '🔥 Sung sức (80p)', cls: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300' }
+        };
+
+        const eInfo = st.isRestDay && st.mins === 0
+          ? { text: '🛌 Ngày nghỉ linh hoạt', cls: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300' }
+          : (log && log.energy ? energyMap[log.energy] : null);
+
+        let completedListHtml = '';
+        if (log && log.completed) {
+          const items = Object.entries(log.completed).filter(([, m]) => Number(m) > 0);
+          if (items.length > 0) {
+            completedListHtml = `<ul class="space-y-1.5 mt-3">` + items.map(([hid, mins]) => {
+              const h = state.habits.find(x => x.id === hid);
+              const name = h ? h.name : 'Thói quen đã xóa';
+              return `<li class="flex items-center justify-between text-xs py-1 px-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/70"><span>✅ ${escapeHtml(name)}</span><strong class="text-emerald-600 dark:text-emerald-400">${mins} phút</strong></li>`;
+            }).join('') + `</ul>`;
+          }
+        }
+
+        container.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Chi tiết ngày</p>
+              <h3 class="text-base font-bold mt-0.5">${formatVietnameseDate(key)}</h3>
+            </div>
+            ${eInfo ? `<span class="text-[11px] font-semibold px-2.5 py-1 rounded-full ${eInfo.cls}">${eInfo.text}</span>` : ''}
+          </div>
+          <div class="mt-3 flex items-center gap-4 text-xs">
+            <span>Mục tiêu ngày: <strong>${st.mins}/${st.goalMins}p (${st.percent}%)</strong></span>
+            <span>Kỹ năng: <strong class="text-emerald-600 dark:text-emerald-400">${st.doneCount}</strong></span>
+          </div>
+          ${completedListHtml || (st.isRestDay ? '<p class="text-xs text-indigo-600 dark:text-indigo-400 mt-4">Ngày nghỉ linh hoạt (1 ngày/tuần) — chuỗi Streak được bảo toàn.</p>' : '<p class="text-xs text-slate-400 dark:text-slate-500 mt-4 italic">Chưa có buổi học nào được ghi nhận trong ngày này.</p>')}
+          ${log && log.note ? `<div class="mt-3 p-2.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/40 text-xs text-slate-700 dark:text-slate-300"><strong>📝 Ghi chú:</strong> ${escapeHtml(log.note)}</div>` : ''}
+          <button type="button" id="btn-edit-inspected-day" class="mt-4 w-full py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-emerald-600 hover:text-white text-xs font-semibold transition-colors">
+            Chỉnh sửa ngày này
+          </button>
+        `;
+      }
+
+      function renderRecentNotes() {
+        const container = document.getElementById('recent-notes-list');
+        const notes = Object.entries(state.logs)
+          .filter(([, log]) => log && log.note && log.note.trim().length > 0)
+          .sort((a, b) => b[0].localeCompare(a[0]))
+          .slice(0, 15);
+
+        if (notes.length === 0) {
+          container.innerHTML = `<p class="text-xs text-slate-400 dark:text-slate-500 italic py-4 text-center">Chưa có ghi chú hay từ mới nào. Hãy ghi lại 1 cụm câu tâm đắc ở tab Hôm nay!</p>`;
+          return;
+        }
+
+        container.innerHTML = notes.map(([dateKey, log]) => `
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+            <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-1">
+              <span class="font-semibold">${formatVietnameseDate(dateKey)}</span>
+              <span>${log.isRestDay ? '🛌' : (log.energy === 'low' ? '🪫' : log.energy === 'high' ? '🔥' : '⚡')}</span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-800 dark:text-slate-200">${escapeHtml(log.note)}</p>
+          </div>
+        `).join('');
+      }
+
+      // ---- Render Stats & Charts ----
+      function renderStatsInsights() {
+        const buckets = { low: [], medium: [], high: [] };
+        Object.keys(state.logs).forEach(k => {
+          const st = getDayStats(k);
+          if (st.mins > 0 && st.energy && buckets[st.energy]) {
+            buckets[st.energy].push(st.mins);
+          }
+        });
+        const avg = arr => arr.length ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length) : 0;
+        document.getElementById('insight-low-avg').textContent = `${avg(buckets.low)} phút/ngày`;
+        document.getElementById('insight-med-avg').textContent = `${avg(buckets.medium)} phút/ngày`;
+        document.getElementById('insight-high-avg').textContent = `${avg(buckets.high)} phút/ngày`;
+      }
+
+      function renderCharts() {
+        if (typeof Chart === 'undefined') return;
+        const isDark = state.theme === 'dark';
+        const textColor = isDark ? '#cbd5e1' : '#475569';
+        const gridColor = isDark ? 'rgba(148, 163, 184, 0.12)' : 'rgba(148, 163, 184, 0.2)';
+
+        // 1. Energy vs Minutes (14 days)
+        const today = getTodayKey();
+        const labels = [];
+        const minsData = [];
+        const energyData = [];
+        const energyValMap = { low: 1, medium: 2, high: 3 };
+
+        for (let i = 13; i >= 0; i--) {
+          const k = addDays(today, -i);
+          labels.push(formatShortDate(k));
+          const st = getDayStats(k);
+          minsData.push(st.mins);
+          const log = state.logs[k];
+          energyData.push(log && log.energy && st.mins > 0 ? energyValMap[log.energy] : null);
+        }
+
+        if (chartEnergyMinutes) chartEnergyMinutes.destroy();
+        const ctx1 = document.getElementById('chart-energy-minutes').getContext('2d');
+        chartEnergyMinutes = new Chart(ctx1, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [
+              {
+                label: 'Phút học',
+                data: minsData,
+                backgroundColor: isDark ? 'rgba(16, 185, 129, 0.65)' : 'rgba(16, 185, 129, 0.8)',
+                borderRadius: 6,
+                yAxisID: 'y',
+                order: 2
+              },
+              {
+                label: 'Năng lượng (1-3)',
+                data: energyData,
+                type: 'line',
+                borderColor: '#f59e0b',
+                backgroundColor: '#f59e0b',
+                borderWidth: 2.5,
+                pointRadius: 4,
+                tension: 0.3,
+                spanGaps: true,
+                yAxisID: 'y1',
+                order: 1
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+              legend: {
+                labels: { color: textColor, boxWidth: 12, font: { size: 11, family: 'Inter' } }
+              }
+            },
+            scales: {
+              x: {
+                ticks: { color: textColor, font: { size: 10 } },
+                grid: { display: false }
+              },
+              y: {
+                beginAtZero: true,
+                position: 'left',
+                title: { display: true, text: 'Phút', color: textColor, font: { size: 10 } },
+                ticks: { color: textColor, font: { size: 10 } },
+                grid: { color: gridColor }
+              },
+              y1: {
+                min: 0,
+                max: 3.5,
+                position: 'right',
+                grid: { display: false },
+                ticks: {
+                  stepSize: 1,
+                  color: '#f59e0b',
+                  font: { size: 10 },
+                  callback: v => (v === 1 ? 'Cạn' : v === 2 ? 'Vừa' : v === 3 ? 'Sung' : '')
+                }
+              }
+            }
+          }
+        });
+
+        // 2. Weekly Skill Balance vs Target
+        const weekly = getWeeklySummary(today);
+        document.getElementById('chart-skills-subtitle').textContent = `Tuần hiện tại so với mốc cân bằng ${weekly.perHabitGoal} phút/kỹ năng`;
+
+        const sLabels = weekly.habitsProgress.map(x => x.habit.category);
+        const sActual = weekly.habitsProgress.map(x => x.mins);
+        const sGoal = weekly.habitsProgress.map(x => x.goal);
+        const sColors = weekly.habitsProgress.map(x => (CATEGORY_META[x.habit.category] || CATEGORY_META['Khác']).color);
+
+        if (chartSkills) chartSkills.destroy();
+        const ctx2 = document.getElementById('chart-skills').getContext('2d');
+        chartSkills = new Chart(ctx2, {
+          type: 'bar',
+          data: {
+            labels: sLabels,
+            datasets: [
+              {
+                label: 'Đã học tuần này (phút)',
+                data: sActual,
+                backgroundColor: sColors,
+                borderRadius: 6
+              },
+              {
+                label: 'Mục tiêu đều tuần (phút)',
+                data: sGoal,
+                backgroundColor: isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(148, 163, 184, 0.25)',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                labels: { color: textColor, boxWidth: 12, font: { size: 11, family: 'Inter' } }
+              }
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                ticks: { color: textColor, font: { size: 10 } },
+                grid: { color: gridColor }
+              },
+              y: {
+                ticks: { color: textColor, font: { size: 11, weight: '600' } },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      // ---- Render Habits Manager ----
+      function renderHabitsManager() {
+        const container = document.getElementById('habits-manager-list');
+        if (state.habits.length === 0) {
+          container.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">Chưa có thói quen nào. Bấm "Thêm thói quen" để bắt đầu.</p>`;
+          return;
+        }
+
+        const activeCount = getActiveHabits().length;
+        const equalShare = activeCount > 0 ? Math.round(WEEKLY_TOTAL_GOAL_MINS / activeCount) : 0;
+
+        container.innerHTML = state.habits.map(h => {
+          const cat = CATEGORY_META[h.category] || CATEGORY_META['Khác'];
+          return `
+            <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${h.active ? '' : 'opacity-60'}">
+              <div class="space-y-1.5 flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-sm font-bold">${escapeHtml(h.name)}</span>
+                  <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md ${cat.badge}">${cat.icon} ${escapeHtml(h.category)}</span>
+                  ${h.active
+                    ? `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">Mục tiêu tuần: ${equalShare}p</span>`
+                    : '<span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Đang tạm ẩn</span>'}
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5 text-[11px] text-slate-600 dark:text-slate-400">
+                  <div><strong class="text-amber-600 dark:text-amber-400">🪫 ${h.targets.low.mins}p:</strong> ${escapeHtml(h.targets.low.desc)}</div>
+                  <div><strong class="text-sky-600 dark:text-sky-400">⚡ ${h.targets.medium.mins}p:</strong> ${escapeHtml(h.targets.medium.desc)}</div>
+                  <div><strong class="text-emerald-600 dark:text-emerald-400">🔥 ${h.targets.high.mins}p:</strong> ${escapeHtml(h.targets.high.desc)}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button type="button" data-action="toggle-active-habit" data-id="${h.id}" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800">
+                  ${h.active ? 'Tạm ẩn' : 'Bật lại'}
+                </button>
+                <button type="button" data-action="edit-habit" data-id="${h.id}" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/50 hover:bg-sky-100">
+                  Sửa
+                </button>
+                <button type="button" data-action="delete-habit" data-id="${h.id}" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100">
+                  Xóa
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // ---- Modal Helpers ----
+      function openHabitModal(habit) {
+        const modal = document.getElementById('modal-habit');
+        document.getElementById('modal-habit-title').textContent = habit ? 'Chỉnh sửa thói quen' : 'Thêm thói quen mới';
+        document.getElementById('habit-edit-id').value = habit ? habit.id : '';
+        document.getElementById('habit-name').value = habit ? habit.name : '';
+        document.getElementById('habit-category').value = habit ? habit.category : 'Nghe';
+        document.getElementById('habit-low-desc').value = habit ? habit.targets.low.desc : '';
+        document.getElementById('habit-low-mins').value = habit ? habit.targets.low.mins : 20;
+        document.getElementById('habit-med-desc').value = habit ? habit.targets.medium.desc : '';
+        document.getElementById('habit-med-mins').value = habit ? habit.targets.medium.mins : 30;
+        document.getElementById('habit-high-desc').value = habit ? habit.targets.high.desc : '';
+        document.getElementById('habit-high-mins').value = habit ? habit.targets.high.mins : 40;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+
+      function closeHabitModal() {
+        const modal = document.getElementById('modal-habit');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+
+      function openSyncModal() {
+        document.getElementById('confirm-reset-box').classList.add('hidden');
+        const modal = document.getElementById('modal-sync');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+
+      function closeSyncModal() {
+        const modal = document.getElementById('modal-sync');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+
+      // ---- Demo Data Generator (Realistic 6 days/week, 1 rest day/week, 1-2 skills/day = 60 mins) ----
+      function loadDemoData() {
+        const today = getTodayKey();
+        const sampleNotes = [
+          'break the ice — phá vỡ sự ngại ngùng khi bắt đầu trò chuyện',
+          'consistency beats intensity — đều đặn thắng cường độ',
+          'get the hang of something — bắt đầu quen và nắm bắt cách làm',
+          'take it one step at a time — tiến từng bước một',
+          'in the long run — về lâu dài',
+          'hit the books — tập trung học bài nghiêm túc',
+          'keep up the momentum — giữ vững đà tiến bộ'
+        ];
+
+        const activeHabits = getActiveHabits();
+        if (activeHabits.length === 0) return;
+
+        // 21 days realistic pattern: 1 rest day per week, 1-2 skills rotating evenly
+        const dayPlans = [
+          { energy: 'medium', pairs: [[0, 30], [1, 30]] },
+          { energy: 'high', pairs: [[2, 40], [3, 40]] },
+          { energy: 'medium', pairs: [[4, 35], [0, 25]] },
+          { energy: 'low', pairs: [[1, 20]] },
+          { energy: 'rest' },
+          { energy: 'high', pairs: [[2, 40], [4, 40]] },
+          { energy: 'medium', pairs: [[3, 35], [1, 25]] },
+
+          { energy: 'medium', pairs: [[0, 30], [2, 30]] },
+          { energy: 'medium', pairs: [[3, 30], [4, 30]] },
+          { energy: 'high', pairs: [[1, 45], [0, 35]] },
+          { energy: 'rest' },
+          { energy: 'medium', pairs: [[2, 30], [4, 30]] },
+          { energy: 'low', pairs: [[3, 25]] },
+          { energy: 'high', pairs: [[1, 40], [3, 40]] },
+
+          { energy: 'medium', pairs: [[0, 35], [2, 25]] },
+          { energy: 'medium', pairs: [[1, 30], [4, 30]] },
+          { energy: 'high', pairs: [[3, 40], [0, 40]] },
+          { energy: 'rest' },
+          { energy: 'medium', pairs: [[2, 35], [4, 25]] },
+          { energy: 'medium', pairs: [[1, 30], [3, 30]] },
+          { energy: 'medium', pairs: [[0, 30], [2, 30]] }
+        ];
+
+        dayPlans.forEach((plan, idx) => {
+          const dayKey = addDays(today, -(dayPlans.length - idx));
+          if (plan.energy === 'rest') {
+            state.logs[dayKey] = { energy: 'low', isRestDay: true, completed: {}, note: '' };
+            return;
+          }
+          const completed = {};
+          plan.pairs.forEach(([hIdx, mins]) => {
+            const h = activeHabits[hIdx % activeHabits.length];
+            if (h) completed[h.id] = (completed[h.id] || 0) + mins;
+          });
+          state.logs[dayKey] = {
+            energy: plan.energy,
+            isRestDay: false,
+            completed,
+            note: idx % 3 === 0 ? sampleNotes[idx % sampleNotes.length] : ''
+          };
+        });
+
+        state.demoDismissed = true;
+        saveState();
+        renderAll();
+        closeSyncModal();
+        showToast('Đã nạp dữ liệu mẫu 21 ngày (6 buổi/tuần, 1 ngày nghỉ/tuần)!');
+      }
+
+      // ---- Export / Import JSON ----
+      function exportJSON() {
+        const payload = JSON.stringify({
+          exportedAt: new Date().toISOString(),
+          version: 2,
+          habits: state.habits,
+          logs: state.logs
+        }, null, 2);
+        const blob = new Blob([payload], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `atomic-english-backup-${getTodayKey()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Đã tải xuống file sao lưu JSON');
+      }
+
+      function copyJSONToClipboard() {
+        const payload = JSON.stringify({ habits: state.habits, logs: state.logs });
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(payload).then(() => {
+            showToast('Đã sao chép mã sao lưu vào Clipboard');
+          }).catch(() => fallbackCopy(payload));
+        } else {
+          fallbackCopy(payload);
+        }
+      }
+
+      function fallbackCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand('copy');
+          showToast('Đã sao chép mã sao lưu');
+        } catch (e) {
+          showToast('Không thể sao chép tự động, hãy dùng nút Tải file JSON');
+        }
+        document.body.removeChild(ta);
+      }
+
+      function escapeHtml(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function renderAll() {
+        renderTodayView();
+        if (state.activeTab === 'heatmap') {
+          renderFullHeatmap();
+          renderHeatmapDetail();
+          renderRecentNotes();
+        } else if (state.activeTab === 'stats') {
+          renderStatsInsights();
+          renderCharts();
+        } else if (state.activeTab === 'habits') {
+          renderHabitsManager();
+        }
+      }
+
+      // ---- Event Listeners ----
+      function bindEvents() {
+        document.getElementById('btn-toggle-theme').addEventListener('click', toggleTheme);
+
+        document.querySelectorAll('[data-tab]').forEach(btn => {
+          btn.addEventListener('click', () => setActiveTab(btn.dataset.tab));
+        });
+
+        // Date navigation
+        document.getElementById('btn-prev-day').addEventListener('click', () => {
+          state.selectedDate = addDays(state.selectedDate, -1);
+          renderTodayView();
+        });
+        document.getElementById('btn-next-day').addEventListener('click', () => {
+          const next = addDays(state.selectedDate, 1);
+          if (next <= getTodayKey()) {
+            state.selectedDate = next;
+            renderTodayView();
+          }
+        });
+        document.getElementById('btn-jump-today').addEventListener('click', () => {
+          state.selectedDate = getTodayKey();
+          renderTodayView();
+        });
+
+        // Demo banner
+        document.getElementById('btn-load-demo').addEventListener('click', loadDemoData);
+        document.getElementById('btn-dismiss-demo').addEventListener('click', () => {
+          state.demoDismissed = true;
+          saveState();
+          document.getElementById('demo-banner').classList.add('hidden');
+        });
+
+        // Energy selection
+        document.querySelectorAll('.energy-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const log = ensureDayLog(state.selectedDate);
+            log.energy = btn.dataset.energy;
+            saveState();
+            renderTodayView();
+            const labels = {
+              low: 'Chế độ Cạn pin: Mục tiêu 20 phút giữ đà',
+              medium: 'Chế độ Bình thường: Mục tiêu chuẩn 60 phút',
+              high: 'Chế độ Sung sức: Mục tiêu tăng tốc 80 phút!'
+            };
+            showToast(labels[log.energy]);
+          });
+        });
+
+        // Rest day toggle
+        document.getElementById('btn-toggle-rest-day').addEventListener('click', () => {
+          const weekly = getWeeklySummary(state.selectedDate);
+          const log = ensureDayLog(state.selectedDate);
+          if (log.isRestDay) {
+            log.isRestDay = false;
+            saveState();
+            renderTodayView();
+            showToast('Đã hủy ngày nghỉ linh hoạt');
+            return;
+          }
+          if (weekly.restDays.length >= WEEKLY_REST_QUOTA) {
+            showToast('Bạn đã dùng hết 1 ngày nghỉ linh hoạt trong tuần này');
+            return;
+          }
+          log.isRestDay = true;
+          saveState();
+          renderTodayView();
+          showToast('🛌 Đã đánh dấu ngày nghỉ linh hoạt — chuỗi Streak vẫn an toàn!');
+        });
+
+        // Apply smart suggestion
+        document.getElementById('btn-apply-suggestion').addEventListener('click', () => {
+          const rec = getSmartRecommendation(state.selectedDate);
+          if (rec.allBalanced || rec.picks.length === 0) return;
+          const log = ensureDayLog(state.selectedDate);
+          log.isRestDay = false;
+          rec.picks.forEach(p => {
+            log.completed[p.habit.id] = (Number(log.completed[p.habit.id]) || 0) + p.mins;
+          });
+          saveState();
+          renderTodayView();
+          showToast('🎉 Đã ghi nhận theo gợi ý cân bằng tuần!');
+        });
+
+        // Today Habits delegation
+        document.getElementById('today-habits-list').addEventListener('click', e => {
+          const btn = e.target.closest('[data-action]');
+          if (!btn) return;
+          const action = btn.dataset.action;
+          const hid = btn.dataset.id;
+          const habit = state.habits.find(h => h.id === hid);
+          if (!habit) return;
+
+          const log = ensureDayLog(state.selectedDate);
+          const energy = log.energy || 'medium';
+          const targetMins = (habit.targets[energy] || habit.targets.medium).mins;
+          const currentMins = Number(log.completed[hid]) || 0;
+
+          if (action === 'toggle-habit') {
+            if (currentMins > 0) {
+              delete log.completed[hid];
+            } else {
+              log.completed[hid] = targetMins;
+              if (log.isRestDay) log.isRestDay = false;
+              const newStats = getDayStats(state.selectedDate);
+              if (newStats.percent >= 100) {
+                showToast(`🎉 Tuyệt vời! Bạn đã đạt 100% mục tiêu hôm nay (${newStats.mins} phút)!`);
+              }
+            }
+          } else if (action === 'inc-mins') {
+            log.completed[hid] = (currentMins > 0 ? currentMins : targetMins) + 5;
+            if (log.isRestDay) log.isRestDay = false;
+          } else if (action === 'dec-mins') {
+            const nextVal = (currentMins > 0 ? currentMins : targetMins) - 5;
+            if (nextVal <= 0) delete log.completed[hid];
+            else log.completed[hid] = nextVal;
+          }
+
+          saveState();
+          renderTodayView();
+        });
+
+        // Daily note autosave
+        document.getElementById('daily-note-input').addEventListener('input', e => {
+          const log = ensureDayLog(state.selectedDate);
+          log.note = e.target.value;
+          saveState();
+          const ind = document.getElementById('note-saved-indicator');
+          ind.classList.remove('opacity-0');
+          clearTimeout(noteSaveTimer);
+          noteSaveTimer = setTimeout(() => ind.classList.add('opacity-0'), 1400);
+        });
+
+        // Quick shortcuts
+        document.getElementById('btn-quick-manage-habits').addEventListener('click', () => setActiveTab('habits'));
+        document.getElementById('btn-goto-full-heatmap').addEventListener('click', () => setActiveTab('heatmap'));
+
+        // Mini heatmap click -> jump to date on Today tab
+        document.getElementById('mini-heatmap-container').addEventListener('click', e => {
+          const cell = e.target.closest('[data-date]');
+          if (!cell) return;
+          state.selectedDate = cell.dataset.date;
+          renderTodayView();
+        });
+
+        // Full heatmap click -> inspect day
+        document.getElementById('full-heatmap-container').addEventListener('click', e => {
+          const cell = e.target.closest('[data-date]');
+          if (!cell) return;
+          state.inspectedDate = cell.dataset.date;
+          renderFullHeatmap();
+          renderHeatmapDetail();
+        });
+
+        // Edit inspected day button delegation
+        document.getElementById('heatmap-day-detail').addEventListener('click', e => {
+          if (e.target.closest('#btn-edit-inspected-day')) {
+            state.selectedDate = state.inspectedDate;
+            setActiveTab('today');
+          }
+        });
+
+        // Habits Manager actions
+        document.getElementById('btn-open-add-habit').addEventListener('click', () => openHabitModal(null));
+        document.getElementById('btn-close-habit-modal').addEventListener('click', closeHabitModal);
+        document.getElementById('btn-cancel-habit').addEventListener('click', closeHabitModal);
+
+        document.getElementById('habits-manager-list').addEventListener('click', e => {
+          const btn = e.target.closest('[data-action]');
+          if (!btn) return;
+          const action = btn.dataset.action;
+          const hid = btn.dataset.id;
+          const idx = state.habits.findIndex(h => h.id === hid);
+          if (idx === -1) return;
+
+          if (action === 'toggle-active-habit') {
+            state.habits[idx].active = !state.habits[idx].active;
+            saveState();
+            renderHabitsManager();
+            showToast(state.habits[idx].active ? 'Đã bật lại thói quen' : 'Đã tạm ẩn thói quen');
+          } else if (action === 'edit-habit') {
+            openHabitModal(state.habits[idx]);
+          } else if (action === 'delete-habit') {
+            if (state.habits.length <= 1) {
+              showToast('Cần giữ lại ít nhất 1 thói quen');
+              return;
+            }
+            state.habits.splice(idx, 1);
+            saveState();
+            renderHabitsManager();
+            showToast('Đã xóa thói quen');
+          }
+        });
+
+        // Habit form submit
+        document.getElementById('form-habit').addEventListener('submit', e => {
+          e.preventDefault();
+          const editId = document.getElementById('habit-edit-id').value;
+          const payload = {
+            name: document.getElementById('habit-name').value.trim(),
+            category: document.getElementById('habit-category').value,
+            active: true,
+            targets: {
+              low: {
+                desc: document.getElementById('habit-low-desc').value.trim(),
+                mins: Math.max(5, Number(document.getElementById('habit-low-mins').value) || 20)
+              },
+              medium: {
+                desc: document.getElementById('habit-med-desc').value.trim(),
+                mins: Math.max(5, Number(document.getElementById('habit-med-mins').value) || 30)
+              },
+              high: {
+                desc: document.getElementById('habit-high-desc').value.trim(),
+                mins: Math.max(5, Number(document.getElementById('habit-high-mins').value) || 40)
+              }
+            }
+          };
+
+          if (editId) {
+            const idx = state.habits.findIndex(h => h.id === editId);
+            if (idx !== -1) {
+              state.habits[idx] = { ...state.habits[idx], ...payload, active: state.habits[idx].active };
+            }
+            showToast('Đã cập nhật thói quen');
+          } else {
+            state.habits.push({ id: 'h_' + Date.now(), ...payload });
+            showToast('Đã thêm thói quen mới');
+          }
+
+          saveState();
+          closeHabitModal();
+          renderHabitsManager();
+        });
+
+        // Sync Modal
+        document.getElementById('btn-open-sync').addEventListener('click', openSyncModal);
+        document.getElementById('btn-close-sync-modal').addEventListener('click', closeSyncModal);
+        document.getElementById('btn-export-json').addEventListener('click', exportJSON);
+        document.getElementById('btn-copy-json').addEventListener('click', copyJSONToClipboard);
+        document.getElementById('btn-sync-load-demo').addEventListener('click', loadDemoData);
+
+        document.getElementById('input-import-json').addEventListener('change', e => {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = ev => {
+            try {
+              const data = JSON.parse(ev.target.result);
+              if (data && typeof data === 'object' && data.logs) {
+                if (Array.isArray(data.habits) && data.habits.length > 0) state.habits = data.habits;
+                state.logs = data.logs;
+                state.demoDismissed = true;
+                saveState();
+                renderAll();
+                closeSyncModal();
+                showToast('Đã nhập dữ liệu thành công!');
+              } else {
+                showToast('File JSON không đúng định dạng sao lưu');
+              }
+            } catch (err) {
+              showToast('Không thể đọc file JSON này');
+            }
+            e.target.value = '';
+          };
+          reader.readAsText(file);
+        });
+
+        document.getElementById('btn-request-reset').addEventListener('click', () => {
+          document.getElementById('confirm-reset-box').classList.remove('hidden');
+        });
+        document.getElementById('btn-cancel-reset').addEventListener('click', () => {
+          document.getElementById('confirm-reset-box').classList.add('hidden');
+        });
+        document.getElementById('btn-confirm-reset').addEventListener('click', () => {
+          state.logs = {};
+          state.habits = JSON.parse(JSON.stringify(DEFAULT_HABITS));
+          state.demoDismissed = false;
+          state.selectedDate = getTodayKey();
+          state.inspectedDate = getTodayKey();
+          saveState();
+          renderAll();
+          closeSyncModal();
+          showToast('Đã xóa dữ liệu và đặt lại mặc định');
+        });
+
+        ['modal-habit', 'modal-sync'].forEach(id => {
+          document.getElementById(id).addEventListener('click', e => {
+            if (e.target.id === id) {
+              if (id === 'modal-habit') closeHabitModal();
+              else closeSyncModal();
+            }
+          });
+        });
+      }
+
+      // ---- Init ----
+      loadState();
+      applyTheme();
+      bindEvents();
+      setActiveTab('today');
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "Atomic English — Tiến bộ Tiếng Anh & Năng lượng",
+  "short_name": "Atomic English",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#10b981",
+  "description": "Theo dõi tiến bộ học tiếng Anh 6 buổi/tuần, cân bằng kỹ năng và thích ứng theo mức năng lượng.",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
